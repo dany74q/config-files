@@ -1,0 +1,78 @@
+<!-- Path is: %HOME%/.IdeaIC2019.3/config/keymaps -->
+<keymap version="1" name="Visual Studio copy" parent="Visual Studio">
+  <action id="Annotate">
+    <keyboard-shortcut first-keystroke="alt g" second-keystroke="alt a" />
+  </action>
+  <action id="Back">
+    <keyboard-shortcut first-keystroke="ctrl minus" />
+  </action>
+  <action id="CheckinProject">
+    <keyboard-shortcut first-keystroke="ctrl k" second-keystroke="ctrl k" />
+  </action>
+  <action id="CloseContent">
+    <keyboard-shortcut first-keystroke="ctrl f4" />
+    <keyboard-shortcut first-keystroke="ctrl w" />
+  </action>
+  <action id="CollapseAll">
+    <keyboard-shortcut first-keystroke="ctrl subtract" />
+  </action>
+  <action id="CollapseAllRegions">
+    <keyboard-shortcut first-keystroke="shift ctrl subtract" />
+  </action>
+  <action id="CollapseExpandableComponent">
+    <keyboard-shortcut first-keystroke="shift enter" />
+    <keyboard-shortcut first-keystroke="ctrl subtract" />
+  </action>
+  <action id="CollapseRegion">
+    <keyboard-shortcut first-keystroke="ctrl subtract" />
+  </action>
+  <action id="EditorAddOrRemoveCaret">
+    <mouse-shortcut keystroke="alt button1" />
+  </action>
+  <action id="EditorCloneCaretAbove">
+    <keyboard-shortcut first-keystroke="ctrl alt up" />
+  </action>
+  <action id="EditorCloneCaretBelow">
+    <keyboard-shortcut first-keystroke="ctrl alt down" />
+  </action>
+  <action id="EditorSelectWord" />
+  <action id="Forward">
+    <keyboard-shortcut first-keystroke="shift ctrl minus" />
+  </action>
+  <action id="Git.CompareWithBranch">
+    <keyboard-shortcut first-keystroke="alt g" second-keystroke="alt c" />
+  </action>
+  <action id="Git.Pull">
+    <keyboard-shortcut first-keystroke="alt g" second-keystroke="alt p" />
+  </action>
+  <action id="InspectCode">
+    <keyboard-shortcut first-keystroke="alt i" second-keystroke="alt c" />
+  </action>
+  <action id="NewScratchBuffer">
+    <keyboard-shortcut first-keystroke="alt s" second-keystroke="alt b" />
+  </action>
+  <action id="NextOccurence" />
+  <action id="PreviousOccurence" />
+  <action id="SmartStepInto">
+    <keyboard-shortcut first-keystroke="shift alt f11" />
+  </action>
+  <action id="Start.Use.Vcs">
+    <keyboard-shortcut first-keystroke="alt c" second-keystroke="alt s" />
+  </action>
+  <action id="Unscramble">
+    <keyboard-shortcut first-keystroke="alt a" second-keystroke="alt s" />
+  </action>
+  <action id="UpdateRunningApplication" />
+  <action id="android.deploy.ApplyChanges">
+    <keyboard-shortcut first-keystroke="ctrl f10" />
+  </action>
+  <action id="android.deploy.CodeSwap">
+    <keyboard-shortcut first-keystroke="ctrl alt f10" />
+  </action>
+  <action id="editRunConfigurations">
+    <keyboard-shortcut first-keystroke="alt e" second-keystroke="alt c" />
+  </action>
+  <action id="osmedile.intellij.stringmanip.ToUpperCaseAction">
+    <keyboard-shortcut first-keystroke="ctrl k" second-keystroke="ctrl u" />
+  </action>
+</keymap>

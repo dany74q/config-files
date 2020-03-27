@@ -1,0 +1,7 @@
+; Path is: %home%
+
+[user]
+	email = dany74q@gmail.com
+	name = Danny Shemesh
+[commit]
+	verbose = true
