@@ -2,9 +2,13 @@ export ZSH=$HOME/.oh-my-zsh
 
 ZSH_THEME="robbyrussell"
 
-plugins=(git colored-man-pages colorize pip python osx zsh-syntax-highlighting zsh-autosuggestions)
+plugins=(git colored-man-pages colorize pip python osx) 
 
 [ -s $ZSH/oh-my-zsh.sh ] && source $ZSH/oh-my-zsh.sh
+
+[ -s /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+[ -s /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Setup PyEnv
 command -v pyenv > /dev/null && eval "$(pyenv init -)"
