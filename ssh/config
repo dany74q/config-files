@@ -2,4 +2,4 @@ AddKeysToAgent yes
 
 Host github.com
   User dany74q
-  IdentityFile $HOME/.ssh/github
+  IdentityFile ~/.ssh/github
