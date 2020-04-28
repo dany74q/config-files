@@ -234,7 +234,7 @@
 	<key>DimBackgroundWindows</key>
 	<false/>
 	<key>DimInactiveSplitPanes</key>
-	<true/>
+	<false/>
 	<key>DimOnlyText</key>
 	<false/>
 	<key>DoubleClickPerformsSmartSelection</key>
@@ -303,7 +303,7 @@
 	<key>NSWindow Frame NSNavPanelAutosaveName</key>
 	<string>560 561 799 448 0 0 1920 1177 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>53 176 1537 999 0 0 1920 1177 </string>
+	<string>295 54 1625 1120 0 0 1920 1177 </string>
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
@@ -994,7 +994,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>BBD9A929-943B-4423-9E55-D58B0266635A</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>8</integer>
+	<integer>9</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -1757,7 +1757,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-03-31T13:22:23Z</date>
+	<date>2020-04-04T16:50:35Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>ShowFullScreenTabBar</key>
@@ -1767,13 +1767,15 @@
 	<key>SoundForEsc</key>
 	<false/>
 	<key>SplitPaneDimmingAmount</key>
-	<real>0.41140569592198584</real>
+	<real>0.10000000000000001</real>
 	<key>TabStyleWithAutomaticOption</key>
 	<integer>1</integer>
 	<key>UseBorder</key>
 	<false/>
 	<key>VisualIndicatorForEsc</key>
 	<false/>
+	<key>findMode_iTerm</key>
+	<integer>0</integer>
 	<key>iTerm Version</key>
 	<string>3.3.9</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>

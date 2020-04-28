@@ -1,0 +1,431 @@
+#+TITLE: My doom emacs config
+#+AUTHOR: Danny Shemesh
+#+EMAIL: dany74q@gmail.com
+#+LANGUAGE: en
+#+STARTUP: inlineimages
+#+PROPERTY: header-args :tangle yes :cache yes :results silent :padline no
+
+* Configuration
+** Personal Information
+*** Set Name
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Danny Shemesh")
+#+END_SRC
+
+*** Set email address
+#+BEGIN_SRC emacs-lisp
+(setq user-mail-address "dany74q@gmail.com")
+#+END_SRC
+** Auto mode list
+*** Go templates as yaml
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.gotmpl\\'" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.gotpl\\'" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\'" . yaml-mode))
+#+END_SRC
+
+** Package Config
+*** Ivy
+**** Set Ivy search engine to ripgrep
+#+BEGIN_SRC emacs-lisp
+(setq +ivy-project-search-engines '(rg))
+#+END_SRC
+**** Decrease which-key delay
+#+BEGIN_SRC emacs-lisp
+(setq which-key-idle-delay 0.1)
+#+END_SRC
+
+*** Company (Autocompletion)
+**** Decrease company delay and length prefix
+#+BEGIN_SRC emacs-lisp
+(require 'company)
+(setq company-idle-delay 0
+    company-minimum-prefix-length 1
+    company-require-match 'never
+    company-dabbrev-downcase nil)
+#+END_SRC
+**** Add company-capf to backends
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'company-backends 'company-capf)
+#+END_SRC
+*** Alert
+#+BEGIN_SRC emacs-lisp
+(use-package! alert
+:defer
+:commands (alert)
+:init
+(setq alert-default-style 'notifier))
+#+END_SRC
+*** Org
+**** Utility functions
+Set the org-journal-today-filename function to be used in org-roam and org
+capture templates.
+
+#+BEGIN_SRC emacs-lisp
+(defun org-journal-today-filename()
+"Gets the journal filename for today"
+(format "%s/%s.org" org-roam-directory (format-time-string "%Y-%m-%d")))
+#+END_SRC
+
+Set the org-prompt-filename function to prompt file names for org captures
+#+BEGIN_SRC emacs-lisp
+(defun org-prompt-filename()
+  "Prompts for a file name for org captures"
+  (read-file-name "Enter file name:"))
+#+END_SRC
+
+**** Set default org dirs
+#+BEGIN_SRC emacs-lisp
+(after! org
+(setq org-directory (expand-file-name "~/personal/writing")
+    org-agenda-files (list org-directory (concat org-directory "todo.org"))))
+#+END_SRC
+**** Open links in new window
+#+BEGIN_SRC emacs-lisp
+(after! org
+(defun my-org-open-link (&optional arg)
+"Opens an org link in a new window (default) or current window, if arg is passed"
+(interactive "P")
+(if arg
+    (let ((org-link-frame-setup '((file . find-file))))
+    (org-open-at-point))
+    (let ((org-link-frame-setup '((file . find-file-other-window))))
+    (org-open-at-point))))
+
+(map! :map org-mode-map "C-c C-o" #'my-org-open-link))
+#+END_SRC
+**** Execute buffer -> Execute maybe
+#+BEGIN_SRC emacs-lisp
+(after! evil-org
+(undefine-key! :map evil-org-mode-map :n "g R")
+(map! :map evil-org-mode-map :n "g R" #'org-babel-execute-maybe))
+#+END_SRC
+**** Org Pomodoro
+Sets up sounds and length in org pomodoro
+
+#+BEGIN_SRC emacs-lisp
+(after! org-pomodoro
+(setq org-pomodoro-play-sounds t
+    org-pomodoro-start-sound-p t
+    org-pomodoro-length 45))
+#+END_SRC
+**** Org Export Confluence (ox-confluence)
+#+BEGIN_SRC emacs-lisp
+(use-package! ox-confluence
+:after (org))
+#+END_SRC
+**** ob-mermaid
+#+BEGIN_SRC emacs-lisp
+(use-package! ob-mermaid
+:after (org)
+:init
+(setq ob-mermaid-cli-path "~/personal/node_modules/.bin/mmdc"))
+#+END_SRC
+**** PlantUML
+#+BEGIN_SRC emacs-lisp
+(setq org-plantuml-jar-path (expand-file-name "~/personal/plantuml.jar"))
+(setq plantuml-jar-path (expand-file-name "~/personal/plantuml.jar"))
+#+END_SRC
+**** Org capture
+Configure capture templates for org
+
+#+BEGIN_SRC emacs-lisp
+(after! org
+(setq org-capture-templates
+    `(("t" "Todo" entry (file+headline "~/personal/writing/todo.org" "Daily Goals")
+        "** TODO [%^{priority|B|A|C}] %? :%^{tag|personal|work}:\n"
+        :jump-to-captured t)
+    ("j" "Journal" plain (file org-journal-today-filename)
+        (file "~/personal/writing/templates/journal-entry.org")
+        :jump-to-captured t)
+    ("p" "Reveal.JS Presentation" plain (file org-prompt-filename)
+     (file "~/personal/writing/templates/reveal-js-entry.org")
+     :jump-to-captured t)
+    ("w" "Work Task" plain (file org-prompt-filename)
+     (file "~/personal/writing/templates/work-task-entry.org")
+     :jump-to-captured t))))
+#+END_SRC
+**** Org Roam
+***** Init org roam after org
+#+BEGIN_SRC emacs-lisp
+(use-package! org-roam
+:hook (org-mode . org-roam-mode))
+#+END_SRC
+***** Map key bindings
+#+BEGIN_SRC emacs-lisp
+(map! :localleader
+:map org-mode-map
+:prefix ("m" . "org-roam")
+:desc "Roam rebuild cache" "c" 'org-roam-db-build-cache
+:desc "Roam today" "t" 'org-roam-today)
+
+(map! :leader
+    :prefix ("n" . "notes")
+    (:prefix ("r" . "roam")
+    :desc "Roam today" "t" 'org-roam-today))
+
+(map! "<f3>" #'org-roam-insert
+    "<f2>" #'org-roam-today)
+#+END_SRC
+***** Capture overrides
+#+BEGIN_SRC emacs-lisp
+(after! org-roam
+(setq! org-roam-capture--file-name-default "${slug}"
+        org-roam-capture--header-default "#+TITLE: ${title}\n#+AUTHOR: Danny Shemesh\n#+DATE: %U\n\n- tags:: \n\n"
+        org-roam-date-filename-format "journal/%Y-%m-%d"
+        org-roam-directory "~/personal/writing/brain-dump"
+        org-roam-capture-templates `(("d" "default" plain (function org-roam-capture--get-point)
+                                      "%?"
+                                      :file-name ,org-roam-capture--file-name-default
+                                      :head ,org-roam-capture--header-default
+                                      :unnarrowed t)
+                                     ("c" "CRM" plain (function org-roam-capture--get-point)
+                                      "%?"
+                                      :file-name ,(format "crm/%s" org-roam-capture--file-name-default)
+                                      :head ,org-roam-capture--header-default
+                                      :unnarrowed t)))
+(defun org-roam-today ()
+    "Create and find journal entry for today"
+    (interactive)
+    (let ((journal-file-name (org-journal-today-filename)))
+    (if (file-exists-p journal-file-name)
+        (find-file journal-file-name)
+        (org-capture nil "j"))))
+
+(defun dashify-org-roam-slug-advice (origfunc &rest args)
+    "Takes an underscored org-roam slug, and dashifies it"
+    (let ((res (apply origfunc args)))
+    (s-replace "_" "-" res)))
+
+(advice-add 'org-roam--title-to-slug :around #'dashify-org-roam-slug-advice))
+#+END_SRC
+***** Start roam
+#+BEGIN_SRC emacs-lisp
+(after! org-roam
+(org-roam))
+#+END_SRC
+**** Org attach screenshot
+#+BEGIN_SRC emacs-lisp
+(use-package! org-attach-screenshot
+  :after evil-org
+  :init
+  (setq! org-attach-screenshot-command-line "screencapture -is %f"
+         org-attach-screenshot-dirfunction (lambda() default-directory))
+
+  (map! :localleader
+        :map evil-org-mode-map
+        :desc "Attach Screenshot" "S" #'org-attach-screenshot))
+#+END_SRC
+**** Org reveal
+#+BEGIN_SRC emacs-lisp
+(setq org-re-reveal-root (format "file://%s" (expand-file-name "~/work/reveal.js")))
+(setq org-re-reveal-title-slide nil)
+(setq org-re-reveal-klipsify-src t)
+#+END_SRC
+**** Org Jira
+#+BEGIN_SRC emacs-lisp
+(setq jiralib-url "https://beyondnetworks.atlassian.net")
+(setq org-jira-download-dir "~/work/brain-dump/jira")
+(setq org-jira-working-dir org-jira-download-dir)
+
+(defun org-to-markdown (origfunc &rest args)
+    "Converts org to markdown"
+    (let ((res (apply origfunc args)))
+      res))
+
+(defun org-from-markdown (origfunc &rest args)
+  "Converts markdown to org"
+  (let ((res (apply origfunc args)))
+    res))
+
+(advice-add 'org-jira-get-comment-body :around #'org-to-markdown)
+#+END_SRC
+
+*** Smartparens
+**** Disable smartparens in org mode
+#+BEGIN_SRC emacs-lisp
+(defun disable-smartparens-in-org-mode ()
+    "Disables smartparens in org mode"
+    (make-local-variable 'smartparens-mode)
+    (setq smartparens-mode nil))
+
+(add-hook! org-mode #'disable-smartparens-in-org-mode)
+#+END_SRC
+*** osx-lib
+This package exposes a volume-setting interface for osx.
+
+#+BEGIN_SRC emacs-lisp
+(use-package! osx-lib :defer)
+(map! :leader
+    :prefix ("v" . "volume")
+    :desc "mute" "m" 'osx-lib-mute-volume
+    :desc "unmute" "u" 'osx-lib-unmute-volume
+    :desc "set-volume" "s" 'osx-lib-set-volume)
+#+END_SRC
+*** counsel-osx-app
+This package shows osx applications in an ivy window.
+
+#+BEGIN_SRC emacs-lisp
+(use-package! counsel-osx-app :defer)
+(map! :leader
+    :prefix ("o" . "open")
+    :desc "app" "a" 'counsel-osx-app)
+#+END_SRC
+*** ranger
+Setup key bindings for ranger
+
+#+BEGIN_SRC emacs-lisp
+(map! :leader
+    :prefix ("o". "open")
+    :desc "Ranger" "=" 'ranger)
+
+(map! :leader
+    :prefix ("f" . "file")
+    :desc "Ranger" "=" 'ranger)
+#+END_SRC
+*** exec-path-from-shell
+Useful to set up the exec-path from .zshenv
+
+#+BEGIN_SRC emacs-lisp
+(exec-path-from-shell-initialize)
+#+END_SRC
+*** kubernetes
+#+BEGIN_SRC emacs-lisp
+(use-package! kubernetes :defer)
+(use-package! kubernetes-evil
+:after kubernetes)
+#+END_SRC
+*** dired
+Auto refresh on file changes
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'dired-mode-hook 'auto-revert-mode)
+#+END_SRC
+*** Avy
+Map avy quick char / word zaps
+
+#+BEGIN_SRC emacs-lisp
+(map! :leader
+    :prefix ("j" . "Jump - Avy")
+    :desc "Avy char - timer" "j" 'avy-goto-char-timer
+    :desc "Avy word" "w" 'avy-goto-word-0)
+#+END_SRC
+*** doom (UI)
+**** Set font to jetbrains mono
+#+BEGIN_SRC emacs-lisp
+(setq doom-font (font-spec :family "JetBrainsMono Nerd Font Mono" :size 15))
+#+END_SRC
+
+**** Set relative line numbers
+#+BEGIN_SRC emacs-lisp
+(setq display-line-numbers-type 'relative)
+#+END_SRC
+
+**** Set initial frame size
+#+BEGIN_SRC emacs-lisp
+(setq initial-frame-alist '((width . 211) (height . 58) (left . 0) (top . 0)))
+#+END_SRC
+**** Highlight matching parentheses
+#+BEGIN_SRC emacs-lisp
+(setq show-paren-delay 0.1)
+(setq show-paren-mode t)
+#+END_SRC
+**** Disable exit confirmation
+#+BEGIN_SRC emacs-lisp
+(setq-default confirm-kill-emacs nil)
+(setq! confirm-kill-emacs nil)
+#+END_SRC
+**** Window splitting
+Set <leader>-w-/ for splitting vertically.
+
+#+BEGIN_SRC emacs-lisp
+(map! :leader
+    :prefix ("w" . "window")
+    :desc "Split vertically" "/" 'evil-window-vsplit)
+#+END_SRC
+**** Text transpose bindings
+:PROPERTIES:
+:ATTACH_DIR: /Users/dany74q/.doom.d/
+:END:
+Set <leader>-x for text transpose.
+
+#+BEGIN_SRC emacs-lisp
+(map! :leader
+    :nv "x" nil
+    (:prefix ("x" . "text")
+    (:prefix ("t" . "transpose")
+        :desc "Transpose chars" "c" 'transpose-chars
+        :desc "Transpose words" "w" 'transpose-words)))
+#+END_SRC
+*** magit
+**** Disable non empty second line check
+#+BEGIN_SRC emacs-lisp
+(after! magit
+(setq git-commit-style-convention-checks
+      (remove 'non-empty-second-line git-commit-style-convention-checks))
+)
+#+END_SRC
+*** Centaur-Tabs
+**** Change cycling scope to 'tabs' (instead of 'group')
+I don't like that cycling through tabs goes to other tab groups.
+
+#+BEGIN_SRC emacs-lisp
+(setq centaur-tabs-cycle-scope 'tabs)
+#+END_SRC
+**** Bind close tab func to g-w
+#+BEGIN_SRC emacs-lisp
+(map! :nv "gw" nil)
+(map! (:prefix "g"
+        :nv "w" #'kill-current-buffer))
+#+END_SRC
+**** Exclude tabs from cycling
+#+BEGIN_SRC emacs-lisp
+(defun centaur-tabs-hide-tab-advice (origfunc &rest args)
+    "Hides unnecessary tabs from centaur"
+    (let ((res (apply origfunc args)) (name (format "%s" (nth 0 args))))
+    (or res
+        (string-prefix-p "*scratch*" name)
+        (string-prefix-p "*Messages*" name)
+        (string-prefix-p "*doom*" name)
+        (string-prefix-p "*org-roam*" name))))
+
+(advice-add 'centaur-tabs-hide-tab :around #'centaur-tabs-hide-tab-advice)
+#+END_SRC
+*** Dired
+Bind find-dired to <spc>-f-f
+
+#+BEGIN_SRC emacs-lisp
+(map! :leader
+      :prefix ("f" . "file")
+      :desc "Find dired" "d" 'find-dired)
+
+(after! dired
+  (undefine-key! :map dired-mode-map :nv "Q")
+  (map! :map dired-mode-map
+      :nv "Q" 'dired-do-query-replace-regexp)
+)
+#+END_SRC
+*** lsp
+Disable lsp root detection (conflicts with go in a multi module hierarchy)
+
+#+BEGIN_SRC emacs-lisp
+(setq lsp-auto-guess-root nil)
+(map! :leader
+      :prefix ("l" . "lsp")
+      :desc "Add Workspace Dir" "a" 'lsp-workspace-folders-add)
+#+END_SRC
+*** gnutls
+Add charles certificate to gnutls trust store
+
+#+BEGIN_SRC emacs-lisp
+(after! gnutls
+  (add-to-list 'gnutls-trustfiles (expand-file-name "~/charles-ssl-proxying-certificate.pem"))
+  (add-to-list 'gnutls-trustfiles (expand-file-name "~/Desktop/FiddlerRootCertificate.crt"))
+  (setq network-security-level 'low)
+)
+#+END_SRC
+*** auth-source
+Add authinfo file to auth-sources list
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auth-sources (expand-file-name "~/.authinfo"))
+#+END_SRC
